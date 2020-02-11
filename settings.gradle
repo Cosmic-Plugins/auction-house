@@ -1,0 +1,3 @@
+rootProject.name = 'auctionhouse'
+
+include 'auctionhouse-common', 'auctionhouse-spigot', 'auctionhouse-sponge'

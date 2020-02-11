@@ -1,0 +1,9 @@
+name: AuctionHouse
+version: 1.0.0
+main: me.randomhashtags.auctionhouse.AuctionHouseSpigot
+api-version: 1.13
+authors: [RandomHashTags]
+description: Virtual market where you can buy, sell, and bid on other player's auctions.
+commands:
+  auctionhouse:
+    permission: AuctionHouse.command

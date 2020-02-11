@@ -1,0 +1,7 @@
+.idea/**
+.gradle/**
+auctionhouse-common/**
+auctionhouse-spigot/build/**
+auctionhouse-spigot/out/**
+auctionhouse-sponge/build/**
+auctionhouse-sponge/out/**

@@ -339,7 +339,7 @@ public enum AuctionHouseAPI implements Listener, CommandExecutor, UVersionable {
     }
 
     public void viewHelp(@NotNull CommandSender sender) {
-        if(hasPermission(sender, "AuctionHouse.help", true)) {
+        if(sender.hasPermission("AuctionHouse.help")) {
             sendStringListMessage(sender, getStringList(config, "messages.help"), null);
         }
     }
@@ -521,7 +521,7 @@ public enum AuctionHouseAPI implements Listener, CommandExecutor, UVersionable {
         top.setItem(nextPageSlot, next);
     }
     public void view(@NotNull Player player, int page) {
-        if(hasPermission(player, "AuctionHouse.command", true)) {
+        if(player.hasPermission("AuctionHouse.command")) {
             player.closeInventory();
             this.page.put(player, page);
             viewing.put(player, "AUCTION_HOUSE");
@@ -533,7 +533,7 @@ public enum AuctionHouseAPI implements Listener, CommandExecutor, UVersionable {
         }
     }
     public void viewCategories(@NotNull Player player) {
-        if(hasPermission(player, "AuctionHouse.view.categories", true)) {
+        if(player.hasPermission("AuctionHouse.view.categories")) {
             player.closeInventory();
             page.put(player, 1);
             viewing.put(player, "CATEGORY_VIEW");
@@ -545,7 +545,7 @@ public enum AuctionHouseAPI implements Listener, CommandExecutor, UVersionable {
         }
     }
     public void viewCategory(@NotNull Player player, @NotNull UMaterial material, @Nullable String name) {
-        if(hasPermission(player, "AuctionHouse.view.category", true)) {
+        if(player.hasPermission("AuctionHouse.view.category")) {
             player.closeInventory();
             player.openInventory(Bukkit.createInventory(null, categoryItems.getSize(), categoryItems.getTitle()));
             final Inventory top = player.getOpenInventory().getTopInventory();
@@ -554,7 +554,7 @@ public enum AuctionHouseAPI implements Listener, CommandExecutor, UVersionable {
         }
     }
     public void viewCollectionBin(@NotNull Player player) {
-        if(hasPermission(player, "AuctionHouse.view.collectionbin", true)) {
+        if(player.hasPermission("AuctionHouse.view.collectionbin")) {
             player.closeInventory();
             page.put(player, 1);
             viewing.put(player, "COLLECTION_BIN");
@@ -599,7 +599,7 @@ public enum AuctionHouseAPI implements Listener, CommandExecutor, UVersionable {
     }
 
     public void confirmAuction(@NotNull Player player, @NotNull ItemStack item, @NotNull BigDecimal price) {
-        if(hasPermission(player, "AuctionHouse.sell", true)) {
+        if(player.hasPermission("AuctionHouse.sell")) {
             final String p = formatBigDecimal(price);
             player.closeInventory();
 
@@ -629,7 +629,7 @@ public enum AuctionHouseAPI implements Listener, CommandExecutor, UVersionable {
         }
     }
     public void auction(@NotNull Player player, @NotNull ItemStack item, @NotNull BigDecimal price) {
-        if(hasPermission(player, "AuctionHouse.auction", true)) {
+        if(player.hasPermission("AuctionHouse.auction")) {
             final UUID uuid = player.getUniqueId();
             if(!auctions.containsKey(uuid)) {
                 auctions.put(uuid, new ArrayList<>());
@@ -661,7 +661,7 @@ public enum AuctionHouseAPI implements Listener, CommandExecutor, UVersionable {
         category.get(name).add(auction);
     }
     public void tryPurchasing(@NotNull Player player, @NotNull AuctionedItem auction) {
-        if(auction != null && hasPermission(player, "AuctionHouse.buy", true)) {
+        if(auction != null && player.hasPermission("AuctionHouse.buy")) {
             player.closeInventory();
 
             final ItemStack its = auction.item();

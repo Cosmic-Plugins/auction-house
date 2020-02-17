@@ -7,3 +7,6 @@ description: Virtual market where you can buy, sell, and bid on other player's a
 commands:
   auctionhouse:
     permission: AuctionHouse.command
+    aliases:
+      - ah
+      - auction

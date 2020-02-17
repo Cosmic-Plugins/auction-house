@@ -1,11 +1,11 @@
 package me.randomhashtags.auctionhouse;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
 import me.randomhashtags.auctionhouse.addon.AuctionedItem;
+import me.randomhashtags.auctionhouse.supported.Vault;
 import me.randomhashtags.auctionhouse.universal.UInventory;
 import me.randomhashtags.auctionhouse.universal.UMaterial;
 import me.randomhashtags.auctionhouse.universal.UVersionable;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -17,6 +17,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -34,10 +35,13 @@ import static java.util.stream.Collectors.toMap;
 public enum AuctionHouseAPI implements Listener, CommandExecutor, UVersionable {
     INSTANCE;
 
+    private boolean isEnabled;
+
     private ItemStack item;
     private ItemMeta itemMeta;
     private List<String> lore;
 
+    private Economy eco;
     public YamlConfiguration config;
 
     private File dataF;
@@ -69,10 +73,12 @@ public enum AuctionHouseAPI implements Listener, CommandExecutor, UVersionable {
         final boolean isPlayer = player != null;
         final int l = args.length;
         if(l == 0) {
-            if(isPlayer) view(player, 1);
+            if(isPlayer) {
+                view(player, 1);
+            }
         } else {
-            final String a = args[0], arg1 = l >= 2 ? args[1] : null;
-            switch (a) {
+            final String arg1 = l >= 2 ? args[1] : null;
+            switch (args[0]) {
                 case "sell":
                     if(arg1 != null) {
                         final BigDecimal price = BigDecimal.valueOf(getRemainingDouble(arg1));
@@ -87,7 +93,9 @@ public enum AuctionHouseAPI implements Listener, CommandExecutor, UVersionable {
                     }
                     break;
                 case "collect":
-                    viewCollectionBin(player);
+                    if(isPlayer) {
+                        viewCollectionBin(player);
+                    }
                     break;
                 case "help":
                     viewHelp(sender);
@@ -101,16 +109,22 @@ public enum AuctionHouseAPI implements Listener, CommandExecutor, UVersionable {
     }
 
     public void load() {
+        if(isEnabled) {
+            return;
+        }
+        isEnabled = true;
         final long started = System.currentTimeMillis();
+
+        eco = Vault.getVault().getEconomy();
+        PLUGIN_MANAGER.registerEvents(this, AUCTION_HOUSE);
 
         item = new ItemStack(Material.APPLE);
         itemMeta = item.getItemMeta();
         lore = new ArrayList<>();
 
-        save(null, "auction house.yml");
         config = YamlConfiguration.loadConfiguration(new File(DATA_FOLDER, "config.yml"));
-        save("_Data", "auctions.yml");
-        dataF = new File(DATA_FOLDER + SEPARATOR + "_Data", "auctions.yml");
+        save(null, "_data.yml");
+        dataF = new File(DATA_FOLDER, "_data.yml");
         data = YamlConfiguration.loadConfiguration(dataF);
 
         purchasing = new HashMap<>();
@@ -242,41 +256,35 @@ public enum AuctionHouseAPI implements Listener, CommandExecutor, UVersionable {
     }
     private void loadAH(boolean async) {
         final long started = System.currentTimeMillis();
-        if(!isEnabled()) {
-            return;
-        }
-        final ConfigurationSection au = data.getConfigurationSection("auctions");
         int ah = 0, cb = 0, d = 0;
-        if(au != null) {
-            final long now = System.currentTimeMillis();
-            for(String uuid : au.getKeys(false)) {
-                final UUID u = UUID.fromString(uuid);
-                auctions.put(u, new ArrayList<>());
-                final List<AuctionedItem> p = auctions.get(u);
-                for(String auctionedTime : getConfigurationSectionKeys(data, "auctions." + uuid, false)) {
-                    final long time = Long.parseLong(auctionedTime);
-                    final ItemStack i = data.getItemStack("auctions." + uuid + "." + auctionedTime + ".item");
-                    final AuctionedItem auction = new AuctionedItem(time, u, i, BigDecimal.valueOf(data.getDouble("auctions." + uuid + "." + auctionedTime + ".price")));
-                    auction.claimable = data.getBoolean("auctions." + uuid + "." + auctionedTime + ".claimable");
-                    final boolean isClaimable = auction.claimable;
-                    boolean deleted = false;
-                    if(isClaimable && now >= time+collectionbinExpiration) {
-                        auction.claimable = false;
-                        deleted = true;
-                    } else if(!isClaimable && now >= time+auctionExpiration) {
-                        auction.claimable = true;
-                    }
-                    if(deleted) {
-                        d++;
+        final long now = System.currentTimeMillis();
+        for(String uuid : getConfigurationSectionKeys(data, "auctions", false)) {
+            final UUID u = UUID.fromString(uuid);
+            auctions.put(u, new ArrayList<>());
+            final List<AuctionedItem> playerAuctions = auctions.get(u);
+            for(String auctionedTime : getConfigurationSectionKeys(data, "auctions." + uuid, false)) {
+                final long time = Long.parseLong(auctionedTime);
+                final ItemStack i = data.getItemStack("auctions." + uuid + "." + auctionedTime + ".item");
+                final AuctionedItem auction = new AuctionedItem(time, u, i, BigDecimal.valueOf(data.getDouble("auctions." + uuid + "." + auctionedTime + ".price")));
+                auction.claimable = data.getBoolean("auctions." + uuid + "." + auctionedTime + ".claimable");
+                final boolean isClaimable = auction.claimable;
+                boolean deleted = false;
+                if(isClaimable && now >= time+collectionbinExpiration) {
+                    auction.claimable = false;
+                    deleted = true;
+                } else if(!isClaimable && now >= time+auctionExpiration) {
+                    auction.claimable = true;
+                }
+                if(deleted) {
+                    d++;
+                } else {
+                    playerAuctions.add(auction);
+                    if(auction.claimable) {
+                        cb++;
                     } else {
-                        p.add(auction);
-                        if(auction.claimable) {
-                            cb++;
-                        } else {
-                            auctionHouse.put(time, auction);
-                            ah++;
-                            addToCategoryView(auction, UMaterial.match(i));
-                        }
+                        auctionHouse.put(time, auction);
+                        ah++;
+                        addToCategoryView(auction, UMaterial.match(i));
                     }
                 }
             }
@@ -297,7 +305,7 @@ public enum AuctionHouseAPI implements Listener, CommandExecutor, UVersionable {
     private void save() {
         try {
             data.save(dataF);
-            dataF = new File(DATA_FOLDER + SEPARATOR + "_Data", "auctions.yml");
+            dataF = new File(DATA_FOLDER, "_data.yml");
             data = YamlConfiguration.loadConfiguration(dataF);
         } catch (Exception e) {
             e.printStackTrace();
@@ -326,15 +334,20 @@ public enum AuctionHouseAPI implements Listener, CommandExecutor, UVersionable {
     }
 
     public void unload() {
-        backup(false);
-        for(Player player : new ArrayList<>(page.keySet())) {
-            player.closeInventory();
-        }
-        for(Player player : new ArrayList<>(viewingCategory.keySet())) {
-            player.closeInventory();
-        }
-        for(AuctionedItem i : task.keySet()) {
-            SCHEDULER.cancelTask(task.get(i));
+        if(isEnabled) {
+            isEnabled = false;
+            HandlerList.unregisterAll(this);
+
+            backup(false);
+            for(Player player : new ArrayList<>(page.keySet())) {
+                player.closeInventory();
+            }
+            for(Player player : new ArrayList<>(viewingCategory.keySet())) {
+                player.closeInventory();
+            }
+            for(AuctionedItem i : task.keySet()) {
+                SCHEDULER.cancelTask(task.get(i));
+            }
         }
     }
 

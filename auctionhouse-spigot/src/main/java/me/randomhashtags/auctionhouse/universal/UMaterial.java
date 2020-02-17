@@ -1,6 +1,6 @@
 package me.randomhashtags.auctionhouse.universal;
 
-import com.sun.istack.internal.NotNull;
+import me.randomhashtags.auctionhouse.NotNull;
 import me.randomhashtags.auctionhouse.util.Versionable;
 import org.bukkit.Color;
 import org.bukkit.Material;

@@ -1,7 +1,7 @@
 package me.randomhashtags.auctionhouse.universal;
 
-import com.sun.istack.internal.NotNull;
 import me.randomhashtags.auctionhouse.AuctionHouseSpigot;
+import me.randomhashtags.auctionhouse.NotNull;
 import me.randomhashtags.auctionhouse.util.Versionable;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -171,6 +171,24 @@ public interface UVersionable extends Versionable {
             }
         }
     }
+
+    default String toMaterial(String input, boolean realitem) {
+        if(input.contains(":")) input = input.split(":")[0];
+        if(input.contains(" ")) input = input.replace(" ", "");
+        if(input.contains("_")) input = input.replace("_", " ");
+        String e = "";
+        if(input.contains(" ")) {
+            final String[] spaces = input.split(" ");
+            final int l = spaces.length;
+            for(int i = 0; i < l; i++) {
+                e = e + spaces[i].substring(0, 1).toUpperCase() + spaces[i].substring(1).toLowerCase() + (i != l-1 ? (realitem ? "_" : " ") : "");
+            }
+        } else {
+            e = input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
+        }
+        return e;
+    }
+
 
     default void giveItem(Player player, ItemStack is) {
         if(is == null || is.getType().equals(Material.AIR)) return;

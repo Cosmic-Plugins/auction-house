@@ -105,10 +105,10 @@ public interface UVersionable extends Versionable {
         CONSOLE.sendMessage(colorize(msg));
     }
     default void sendConsoleDidLoadFeature(String what, long started) {
-        sendConsoleMessage("&6[RandomPackage] &aLoaded " + what + " &e(took " + (System.currentTimeMillis()-started) + "ms)");
+        sendConsoleMessage("&6[AuctionHouse] &aLoaded " + what + " &e(took " + (System.currentTimeMillis()-started) + "ms)");
     }
     default void sendConsoleDidLoadAsyncFeature(String what) {
-        sendConsoleMessage("&6[RandomPackage] &aLoaded " + what + " &e[async]");
+        sendConsoleMessage("&6[AuctionHouse] &aLoaded " + what + " &e[async]");
     }
     default String formatBigDecimal(BigDecimal b) {
         return formatBigDecimal(b, false);

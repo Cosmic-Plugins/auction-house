@@ -22,27 +22,27 @@ messages:
     - " "
   #
   must enter valid price:
-    - "&c&l(!)&r &cPlace enter a valid price between $1 - $2 billion"
+    - "&c&l(!)&r &cPlace enter a valid price between \$1 - \$2 billion"
   start listing:
     - "&e&l(!)&r &eTo list an item for sale on the &6/ah &euse &6/ah sell <price>&e."
   listed:
-    - "&e&l(!)&r &eYou have listed your {ITEM} on the auction house for &6&l$&r&6{PRICE}&r&e!"
+    - "&e&l(!)&r &eYou have listed your {ITEM} on the auction house for &6&l\$&r&6{PRICE}&r&e!"
   cancelled listing:
     - "&a&l(!)&r &aYou have cancelled an auction listing. Return cancelled and expired listings in &6/ah expired&a."
   claimed expired listing:
     - "&e&l(!)&r &eYou have re-claimed your {ITEM}&r &efrom the auction house!"
   sold auction:
-    - "&a&l+ $&r&a{PRICE}"
+    - "&a&l+ \$&r&a{PRICE}"
     - "&e&l(!)&r &e{PURCHASER} has purchased your {ITEM}!"
   purchased auction:
-    - "&c&l- $&r&c{PRICE}"
+    - "&c&l- \$&r&c{PRICE}"
     - "&eYou have purchased {ITEM}&r &efrom {SELLER}!"
   auction sell cancelled:
     - "&c&l(!)&r &cAuction Sell - &lCANCELLED"
   auction purchase cancelled:
     - "&c&l(!)&r &cAuction Purchase - &lCANCELLED"
   cannot afford:
-    - "&c&l(!)&r &cYou cannot afford &l$&r&c{PRICE} for this auction item!"
+    - "&c&l(!)&r &cYou cannot afford &l\$&r&c{PRICE} for this auction item!"
   need to be holding item:
     - "&c&l(!)&r &cYou must be holding a valid item to auction!"
   item no longer exists:
@@ -69,7 +69,7 @@ auction house:
     - "&7&l&m-------------------------"
     - "{STATUS}"
     - " "
-    - "&6Price: &e$&r&e{PRICE}"
+    - "&6Price: &e\$&r&e{PRICE}"
     - "&6Seller: &e{SELLER}"
     - "&7&l&m-------------------------"
   status:
@@ -122,7 +122,7 @@ categories:
   format:
     - " "
     - "&6&lListings:&r &e{LISTINGS}"
-    - " &6Lowest Price: &e&l$&r&e{LOWEST_PRICE}"
+    - " &6Lowest Price: &e&l\$&r&e{LOWEST_PRICE}"
   #
   groups:
     enchanted books:
@@ -177,7 +177,7 @@ listings:
     - "&7&l-------------------------"
     - "&c&lClick item to cancel auction."
     - " "
-    - "&6Price: &e${PRICE}"
+    - "&6Price: &e\${PRICE}"
     - "&6Expires: &e{TIME}"
     - "&7&l-------------------------"
   #
@@ -207,7 +207,7 @@ collection bin:
     - "&7&l-------------------------"
     - "&e&lIN AUCTION"
     - " "
-    - "&6Price:&r &e&l$&r&e{PRICE}"
+    - "&6Price:&r &e&l\$&r&e{PRICE}"
     - "&7Click to &c&ncancel&r &7this auction!"
     - " "
     - "&6Expires: &e{TIME}"
@@ -227,7 +227,7 @@ collection bin:
     item: "{RETURN_TO_AH}"
 #
 purchase item:
-  title: "Buy for ${PRICE}"
+  title: "Buy for \${PRICE}"
   size: 9
   #
   confirm:
@@ -236,14 +236,14 @@ purchase item:
     lore:
       - "&7Confirm purchase of"
       - "&7{ITEM} for"
-      - "&a&l$&r&a{PRICE}!"
+      - "&a&l\$&r&a{PRICE}!"
   cancel:
     item: "red_stained_glass_pane"
     name: "&a&lCancel Buy"
     lore:
       - "&7Cancel purchase of"
       - "&7{ITEM} for"
-      - "&c&l$&r&c{PRICE}!"
+      - "&c&l\$&r&c{PRICE}!"
   #
   confirm 1:
     slot: 0
@@ -283,14 +283,14 @@ confirm auction:
     lore:
       - "&7Confirm selling of"
       - "&7{ITEM} for"
-      - "&a&l$&r&a{PRICE}!"
+      - "&a&l\$&r&a{PRICE}!"
   decline:
     item: "red_stained_glass_pane"
     name: "&a&lCancel Sell"
     lore:
       - "&7Cancel selling of"
       - "&7{ITEM} for"
-      - "&c&l$&r&c{PRICE}!"
+      - "&c&l\$&r&c{PRICE}!"
   #
   accept 1:
     slot: 0
